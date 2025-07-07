@@ -1,0 +1,126 @@
+/* @import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities"; */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Autofill fixes */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  box-shadow: 0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color: #1a1a1a !important; /* Light mode text */
+  transition: background-color 5000s ease-in-out 0s;
+    /* -webkit-text-fill-color: #000 !important; */
+
+}
+
+/* Dark mode autofill support */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus {
+    /* -webkit-text-fill-color: #fff !important; */
+
+  box-shadow: 0 0 0px 1000px #23272f inset !important;  /* Dark card background */
+  -webkit-text-fill-color: #f4f4f4 !important; /* Light text for dark mode */
+}
+
+html, body {
+  overflow-x: hidden; /* Prevent horizontal scroll only */
+  overflow-y: auto;   /* Allow vertical scroll */
+}
+
+
+/* Smooth background transition for html and body */
+html, body {
+  transition: background-color 0.21s ease-in-out;
+  background-color: #eff6ff; /* Set Tailwind's bg-blue-50 as the default background */
+}
+
+/* Dark mode support */
+html.dark, body.dark {
+  /* background-color: #111827; Tailwind's bg-gray-900 */
+  background-color: #23272f; /* Dark mode background */
+  color: #f4f4f4; /* Light text for dark mode */
+}
+
+
+html, body {
+  background-color: #ffffff ; /* fallback for light mode */
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.21s ease-in-out;
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+}
+
+
+html.dark, body.dark {
+  background-color: #111827;
+  color: #f4f4f4;
+}
+/* Custom scrollbar styles */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px;
+}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background-color: #f3f4f6; /* light gray for light mode */
+  border-radius: 4px;
+}
+
+html.dark::-webkit-scrollbar-track,
+body.dark::-webkit-scrollbar-track {
+  background-color: #374151; /* dark gray for dark mode */
+  border-radius: 4px;
+} 
+
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  border-radius: 4px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
+}
+
+/* Toastify custom styles for light mode */
+.Toastify__toast {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+/* Toastify custom styles for dark mode */
+html.dark .Toastify__toast {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+/* Optional: Adjust success/error/info colors for better contrast */
+.Toastify__toast--success {
+  border-left: 6px solid #0da22b;
+}
+.Toastify__toast--error {
+  border-left: 6px solid #ef4444;
+}
+.Toastify__toast--info {
+  border-left: 6px solid #3b82f6;
+}
+
+/* Dark mode input and select field fix */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #1f2937 !important; /* dark gray */
+  color: #f9fafb !important;            /* light text */
+  border-color: #374151 !important;     /* slightly lighter border */
+}
+
+

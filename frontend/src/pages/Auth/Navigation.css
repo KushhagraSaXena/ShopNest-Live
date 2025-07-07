@@ -1,0 +1,67 @@
+#navigation-container {
+  transition: width 0.3s ease-in-out;
+  overflow: hidden; /* Hide overflowing content during transition */
+}
+
+#navigation-container:hover {
+   width: 8%;  /*  this line changes length of sidebar*/
+}
+
+/* Initially hide nav-item-name */
+.nav-item-name {
+  display: none;
+  transition: opacity 0.2s ease-in-out; /* Add opacity transition */
+}
+
+/* later */
+
+#navigation-container:hover .nav-item-name {
+  display: block;
+  opacity: 1;
+}
+
+.search-input {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out; /* Add opacity transition */
+}
+
+#navigation-container:hover .search-input {
+  display: block;
+  opacity: 1;
+}
+
+#navigation-container:hover .search-icon {
+  display: none;
+  transition: opacity 0.2s ease-in-out; /* Add opacity transition */
+}
+
+
+/* edits by gpts */
+/* Full width for mobile */
+@media screen and (max-width: 768px) {
+  #navigation-container {
+    width: 60% !important; /* override inline/hover width */
+    position: fixed;
+    z-index: 999;
+    transition: width 0.3s ease-in-out;
+  }
+  #navigation-container:hover {
+    width: 60% !important;
+  }
+  .nav-item-name {
+    display: none !important;
+  }
+}
+
+/* Hide on very narrow screens */
+@media screen and (max-width: 480px) {
+  #navigation-container {
+    width: 0 !important;
+    overflow: hidden;
+  }
+  #navigation-container.open {
+    width: 70% !important;
+  }
+}
+
