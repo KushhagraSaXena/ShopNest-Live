@@ -2,7 +2,7 @@ import {apiSlice} from './apiSlice'
 import { USERS_URL } from '../constants'
 import { logout } from '../features/auth/authSlice';
 import Profile from '../../pages/User/Profile';
-import { get } from 'mongoose';
+
 
 export const userApiSlice = apiSlice.injectEndpoints({    //login endpoint
 endpoints : (builder) => ({
