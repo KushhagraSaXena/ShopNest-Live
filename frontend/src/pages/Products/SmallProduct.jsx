@@ -1,30 +1,64 @@
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import HeartIcon from "./HeartIcon";
 
-const SmallProduct = ({ product }) => {
-  const userId = useSelector((state) => state.auth.userInfo?._id);
+const SmallProduct = ({
+  product,
+  userId,
+  favourites = [],
+  addFavorite,
+  removeFavorite,
+}) => {
+  const handleCardClick = () => {
+    window.location.href = `/product/${product._id}`;
+  };
+
+  const handleHeartClick = (e) => {
+    e.stopPropagation(); // ✅ Prevents click bubbling to the whole card
+  };
+
   return (
-    <div className="w-[20rem] ml-[2rem] p-3">
+    <div className="w-full md:max-w-[22rem] h-full">
+        <div className="w-full h-full rounded-lg shadow-md 
+             bg-white dark:bg-gray-800 overflow-hidden 
+             cursor-pointer group hover:scale-105 transition-transform"
+                onClick={handleCardClick}
+              >
+
       <div className="relative">
-        <img
+        <img 
           src={product.image}
           alt={product.name}
-          className="h-auto rounded"
+          className="w-full h-56 sm:h-64 md:h-72 object-cover  flex flex-col justify-center items-center"
         />
-        <HeartIcon product={product} userId={userId} />
+
+        
+        {/* ✅ HeartIcon fixed and re-enabled */}
+          {userId && (
+            <div
+              className="absolute top-2 right-2 z-10"
+              onClick={handleHeartClick}
+            >
+              <HeartIcon
+                productId={product._id}
+                userId={userId}
+                favourites={favourites}
+                addFavorite={addFavorite}
+                removeFavorite={removeFavorite}
+              />
+            </div>
+          )}
+
       </div>
 
       <div className="p-4">
-        <Link to={`/product/${product._id}`}>
-          <h2 className="flex justify-between items-center">
-            <div>{product.name}</div>
-            <span className="bg-pink-100 text-pink-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-pink-800 dark:text-pink-100">
-              ${product.price}
-            </span>
-          </h2>
-        </Link>
+        <h2 className="text-md font-semibold text-gray-900 dark:text-white">
+          {product.name}
+        </h2>
+        <p className="dark:text-white text-blue-900 font-bold mt-1">
+          ${product.price}
+        </p>
       </div>
+    </div>
     </div>
   );
 };

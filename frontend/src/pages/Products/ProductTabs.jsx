@@ -1,9 +1,10 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Ratings from "./Ratings";
 import { useGetTopProductsQuery } from "../../redux/api/productApiSlice";
 import SmallProduct from "./SmallProduct";
 import Loader from "../../components/Loader";
+import { useEffect, useRef } from "react";
+import StarRatingInput from "../../components/StarRatingInput";
 
 const ProductTabs = ({
   loadingProductReview,
@@ -14,10 +15,56 @@ const ProductTabs = ({
   comment,
   setComment,
   product,
+  activeTab,
+  setActiveTab,
+
+  userId,
+  favourites,
+  addFavorite,
+  removeFavorite,
 }) => {
   const { data, isLoading } = useGetTopProductsQuery();
 
-  const [activeTab, setActiveTab] = useState(1);
+  const ratingLabels = {
+    1: "Inferior",
+    2: "Decent",
+    3: "Great",
+    4: "Excellent",
+    5: "Exceptional",
+  };
+
+
+  const reviewRef = useRef(null);
+
+  useEffect(() => {
+    if (activeTab === 2 && window.location.hash === "#reviews") {
+      setTimeout(() => {
+        reviewRef.current?.scrollIntoView({ behavior: "smooth" });
+
+        // Optional highlight animation
+        reviewRef.current?.classList.add("bg-blue-100", "dark:bg-gray-700");
+        setTimeout(() => {
+          reviewRef.current?.classList.remove("bg-blue-100", "dark:bg-gray-700");
+        }, 1500);
+      }, 200); // 300ms delay ensures DOM is mounted
+    }
+  }, [activeTab]);
+
+
+
+  useEffect(() => {
+    if (window.location.hash === "#reviews") {
+      setTimeout(() => {
+        reviewRef.current?.classList.add("bg-blue-100", "dark:bg-gray-700");
+        setTimeout(() => {
+          reviewRef.current?.classList.remove("bg-blue-100", "dark:bg-gray-700");
+        }, 2000);
+      }, 300); // delay to let tab content render
+
+      reviewRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
 
   if (isLoading) {
     return <Loader />;
@@ -28,134 +75,173 @@ const ProductTabs = ({
   };
 
   return (
-    <div className="flex flex-col md:flex-row">
-      <section className="mr-[5rem]">
-        <div
-          className={`flex-1 p-4 cursor-pointer text-lg ${
-            activeTab === 1 ? "font-bold" : ""
-          }`}
-          onClick={() => handleTabClick(1)}
-        >
-          Write Your Review
-        </div>
-        <div
-          className={`flex-1 p-4 cursor-pointer text-lg ${
-            activeTab === 2 ? "font-bold" : ""
-          }`}
-          onClick={() => handleTabClick(2)}
-        >
-          All Reviews
-        </div>
-        <div
-          className={`flex-1 p-4 cursor-pointer text-lg ${
-            activeTab === 3 ? "font-bold" : ""
-          }`}
-          onClick={() => handleTabClick(3)}
-        >
-          Related Products
-        </div>
-      </section>
 
-      {/* Second Part */}
-      <section>
-        {activeTab === 1 && (
-          <div className="mt-4">
-            {userInfo ? (
-              <form onSubmit={submitHandler}>
-                <div className="my-2">
-                  <label htmlFor="rating" className="block text-xl mb-2">
-                    Rating
-                  </label>
+    <div className="container mx-auto px-2 sm:px-4">
 
-                  <select
-                    id="rating"
-                    required
-                    value={rating}
-                    onChange={(e) => setRating(e.target.value)}
-                    className="p-2 border rounded-lg xl:w-[40rem] text-black"
-                  >
-                    <option value="">Select</option>
-                    <option value="1">Inferior</option>
-                    <option value="2">Decent</option>
-                    <option value="3">Great</option>
-                    <option value="4">Excellent</option>
-                    <option value="5">Exceptional</option>
-                  </select>
-                </div>
-
-                <div className="my-2">
-                  <label htmlFor="comment" className="block text-xl mb-2">
-                    Comment
-                  </label>
-
-                  <textarea
-                    id="comment"
-                    rows="3"
-                    required
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="p-2 border rounded-lg xl:w-[40rem] text-black"
-                  ></textarea>
-                </div>
-                <button
-                  type="submit"
-                  disabled={loadingProductReview}
-                  className="bg-pink-600 text-white py-2 px-4 rounded-lg"
-                >
-                  Submit
-                </button>
-              </form>
-            ) : (
-              <p>
-                Please <Link to="/login">sign in</Link> to write a review
-              </p>
-            )}
-          </div>
-        )}
-      </section>
-
-      <section>
-        {activeTab === 2 && (
-          <>
-            <div>{product.reviews.length === 0 && <p>No Reviews</p>}</div>
-
-            <div>
-              {product.reviews.map((review) => (
-                <div
-                  key={review._id}
-                  className="bg-[#1A1A1A] p-4 rounded-lg xl:ml-[2rem] sm:ml-[0rem] xl:w-[50rem] sm:w-[24rem] mb-5"
-                >
-                  <div className="flex justify-between">
-                    <strong className="text-[#B0B0B0]">{review.name}</strong>
-                    <p className="text-[#B0B0B0]">
-                      {review.createdAt.substring(0, 10)}
-                    </p>
-                  </div>
-
-                  <p className="my-4">{review.comment}</p>
-                  <Ratings value={review.rating} />
-                </div>
-              ))}
+      <div ref={reviewRef}>
+        <div className="flex flex-col md:flex-row">
+          <section className="w-full md:w-auto md:mr-[5rem] flex flex-row md:flex-col justify-around md:justify-start">
+            <div
+              className={`flex-1 p-4 cursor-pointer text-lg ${activeTab === 1 ? "font-bold" : ""
+                }`}
+              onClick={() => handleTabClick(1)}
+            >
+              Write Your Review
             </div>
-          </>
-        )}
-      </section>
+            <div
+              className={`flex-1 p-4 cursor-pointer text-lg ${activeTab === 2 ? "font-bold" : ""
+                }`}
+              onClick={() => setActiveTab(2)}
+            >
+              All Reviews
+            </div>
 
-      <section>
-        {activeTab === 3 && (
-          <section className="ml-[4rem] flex flex-wrap">
-            {!data ? (
-              <Loader />
-            ) : (
-              data.map((product) => (
-                <div key={product._id}>
-                  <SmallProduct product={product} />
-                </div>
-              ))
+            <div
+              className={`flex-1 p-4 cursor-pointer text-lg ${activeTab === 3 ? "font-bold" : ""
+                }`}
+              onClick={() => handleTabClick(3)}
+            >
+              Related Products
+            </div>
+          </section>
+
+          {/* Second Part */}
+          <section>
+            {activeTab === 1 && (
+              <div className="mt-4 px-4 sm:px-6 lg:px-12 max-w-3xl mx-auto">
+                {userInfo ? (
+                  <form onSubmit={submitHandler}>
+                    <div className="my-2">
+                      <label htmlFor="rating" className="block text-xl mb-2 text-gray-900 dark:text-gray-200">
+                        Rating
+                      </label>
+
+                      {/* ⭐ Star input — always visible */}
+                      <div className="mb-2">
+                        <StarRatingInput rating={Number(rating)} setRating={(val) => setRating(val)} />
+                        {rating > 0 && (
+                          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            Selected: <span className="font-semibold">{ratingLabels[rating]}</span>
+                          </p>
+                        )}
+                      </div>
+
+                      {/* 🔽 Dropdown — hidden on mobile */}
+                      <div className="hidden md:block">
+                        <select
+                          id="rating"
+                          name="rating"
+                          required
+                          value={rating}
+                          onChange={(e) => setRating(Number(e.target.value))}
+                          className="p-2 w-full md:w-[12rem] border border-gray-400 rounded-lg xl:w-[40rem] text-black
+                                      hover:border-gray-500 focus:border-blue-400 focus:outline-none
+                                      focus:ring-2 focus:ring-blue-300  dark:text-white dark:bg-gray-800 dark:border-gray-600 
+                                      dark:focus:border-pink-600 dark:focus:ring-pink-500
+                                      transition-colors duration-150">
+                          <option value="">Select</option>
+                          {Object.entries(ratingLabels).map(([val, label]) => (
+                            <option key={val} value={val}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+
+                    <div className="my-2">
+                      <label htmlFor="comment" className="block text-xl mb-2">
+                        Comment
+                      </label>
+
+                      <textarea
+                        id="comment"
+                        name="comment"
+                        rows="3"
+                        required
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        className="p-2 border rounded-lg xl:w-[40rem] text-black w-full border-gray-400 
+                    hover:border-gray-500 focus:border-blue-400 focus:outline-none 
+                    focus:ring-2 focus:ring-blue-300 
+                    dark:text-white dark:bg-gray-800 dark:border-gray-600 
+                    dark:focus:border-pink-600 dark:focus:ring-pink-500 
+                    resize-none transition-colors duration-150" ></textarea>
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={loadingProductReview}
+                      className="dark:bg-pink-600 dark:hover:bg-pink-800 dark:text-white 
+                  bg-blue-500 hover:bg-blue-700 
+                  text-white font-bold py-2 px-4 rounded-lg mt-4 
+                  transition-colors duration-150 
+                  disabled:opacity-50 disabled:cursor-not-allowed"
+
+                    >
+                      Submit
+                    </button>
+                  </form>
+                ) : (
+                  <p>
+                    Please <Link to="/login">sign in</Link> to write a review
+                  </p>
+                )}
+              </div>
             )}
           </section>
-        )}
-      </section>
+
+          <section>
+            {activeTab === 2 && (
+              <>
+                <div id="reviews" ref={reviewRef} className="p-2 transition-all rounded-md">
+                  <div>{product.reviews.length === 0 && <p>No Reviews</p>}</div>
+
+                  <div>
+                    {product.reviews.map((review) => (
+                      <div
+                        key={review._id}
+                        className=" w-full max-w-4xl mx-auto p-4 mb-5 bg-blue-100 dark:bg-gray-800 rounded-lg text-gray-900 dark:text-gray-200" >
+                        <div className="flex justify-between">
+                          <strong className="text-gray-600  dark:text-gray-300">{review.name}</strong>
+                          <p className="text-[#8c8c8c]  dark:text-gray-500">
+                            {review.createdAt.substring(0, 10)}
+                          </p>
+                        </div>
+
+                        <p className="my-4 text-gray-900 dark:text-gray-200">{review.comment}</p>
+                        <Ratings value={review.rating} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </section>
+
+          <section>
+            {activeTab === 3 && (
+              <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 sm:px-0 place-items-center">
+                {!data ? (
+                  <Loader />
+                ) : (
+                  data.map((p) => (
+                    <SmallProduct
+                      key={p._id}
+                      product={p}
+                      userId={userId}
+                      favourites={favourites}
+                      addFavorite={addFavorite}
+                      removeFavorite={removeFavorite}
+                    />
+                  ))
+                )}
+              </section>
+
+            )}
+          </section>
+        </div>
+      </div>
     </div>
   );
 };

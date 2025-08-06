@@ -3,20 +3,19 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { apiSlice } from "./api/apiSlice";
 import authReducer from './features/auth/authSlice'
 import favoritesReducer from "../redux/features/Favorites/favoriteSlice";
-// import cartSliceReducer from "../redux/features/cart/cartSlice";
-// import shopReducer from "../redux/features/shop/shopSlice";
-// import { getFavoritesFromLocalStorage } from "../../Utils/localStorage";
+import cartSliceReducer from "../redux/features/cart/cartSlice";
+import shopReducer from "../redux/features/Shop/shopSlice";
+import { getFavoritesFromLocalStorage } from "../../Utils/localStorage";
 
-// import { set } from "mongoose";
-// import express from "express";
+const initialFavourites = getFavoritesFromLocalStorage(); //can be removed as shhifted to mongo db
 
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authReducer,
     favorites: favoritesReducer,
-    // cart: cartSliceReducer,
-    // shop: shopReducer,
+    cart: cartSliceReducer,
+    shop: shopReducer,
   },
   // Remove preloadedState for favorites, let slice handle it
   middleware: (getDefaultMiddleware) =>

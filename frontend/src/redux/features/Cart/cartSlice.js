@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-// import { updateCart } from "../../../Utils/cartUtils";
+import { updateCart } from "../../../../Utils/cart";
 
 const initialState = localStorage.getItem("cart")
   ? JSON.parse(localStorage.getItem("cart"))
@@ -10,7 +10,8 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { user, rating, numReviews, reviews, ...item } = action.payload;
+       const { user, rating, numReviews, reviews, ...item } = action.payload;
+      item.qty = Number(item.qty || 1);   // ← force numeric, default to 1
       const existItem = state.cartItems.find((x) => x._id === item._id);
 
       if (existItem) {
@@ -31,6 +32,7 @@ const cartSlice = createSlice({
     saveShippingAddress: (state, action) => {
       state.shippingAddress = action.payload;
       localStorage.setItem("cart", JSON.stringify(state));
+      return updateCart(state);
     },
 
     savePaymentMethod: (state, action) => {
@@ -43,7 +45,12 @@ const cartSlice = createSlice({
       localStorage.setItem("cart", JSON.stringify(state));
     },
 
-    resetCart: (state) => (state = initialState),
+    resetCart: (state) => {
+  state.cartItems = [];
+  state.shippingAddress = {};
+  state.paymentMethod = "PayPal";
+  localStorage.setItem("cart", JSON.stringify(initialState));
+  },
   },
 });
 
@@ -57,3 +64,7 @@ export const {
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
+
+export const selectTotalQty = (state) =>
+  state.cart.cartItems.reduce((sum, i) => sum + Number(i.qty || 1), 0);
+

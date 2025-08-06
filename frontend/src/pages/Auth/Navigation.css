@@ -39,29 +39,71 @@
 
 /* edits by gpts */
 /* Full width for mobile */
+/* Tablet (max-width: 768px) */
+/* Tablet (max-width: 768px) */
 @media screen and (max-width: 768px) {
   #navigation-container {
-    width: 60% !important; /* override inline/hover width */
+    width: 12% !important; /* initial sidebar size */
     position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    background-color: var(--bg-color, #bfdbfe);
     z-index: 999;
     transition: width 0.3s ease-in-out;
+    overflow: hidden;
   }
+
   #navigation-container:hover {
-    width: 60% !important;
+    width: 30% !important;
   }
-  .nav-item-name {
-    display: none !important;
+
+  #navigation-container.open {
+    width: 30% !important; /* on burger menu click */
+  }
+
+  #navigation-container.open .nav-item-name {
+  color: var(--text-color, #000); /* default black */
+}
+
+:root.dark #navigation-container.open .nav-item-name {
+  --text-color: #fff;
+}
+
+  #navigation-container .nav-item-name {
+    display: none;
+    color: #000; /* ensure it's visible on light background */
+  }
+
+  #navigation-container.open .nav-item-name {
+    display: block !important;
+    color: #000; /* override dark styling if needed */
+  }
+
+  #navigation-container.open svg {
+    stroke: #000 !important; /* makes icons visible */
   }
 }
 
-/* Hide on very narrow screens */
+
+
+/* Mobile (max-width: 480px) */
+/* Hide on very narrow screens and display by button pressed */
 @media screen and (max-width: 480px) {
   #navigation-container {
     width: 0 !important;
     overflow: hidden;
   }
   #navigation-container.open {
-    width: 70% !important;
+    width: 60% !important;
   }
 }
 
+
+/* Optional CSS for smoother content shift */
+@media (min-width: 1024px) {
+  .sidebar-open ~ .main-content {
+    padding-left: 14rem;
+    transition: padding 0.3s ease;
+  }
+}

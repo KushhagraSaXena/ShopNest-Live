@@ -7,6 +7,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+#environment variables
+.env
+.env*
+# Environment variables
+.env
+.env.*
+!.env.example
+
 # Ignore all node_modules folders
 node_modules/
 frontend/node_modules/

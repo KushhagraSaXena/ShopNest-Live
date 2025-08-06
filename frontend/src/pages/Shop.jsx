@@ -1,209 +1,226 @@
-// import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useGetFilteredProductsQuery } from "../redux/api/productApiSlice";
-// import { useFetchCategoriesQuery } from "../redux/api/categoryApiSlice";
-// import { useGetFavoritesQuery, useAddFavoriteMutation, useRemoveFavoriteMutation } from "../redux/api/usersApiSlice";
+// src/pages/Shop.jsx
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useGetFilteredProductsQuery } from "../redux/api/productApiSlice";
+import {
+  fetchFavorites,
+  addFavorite,
+  removeFavorite,
+} from "../redux/features/Favorites/favoriteSlice";
+import { useFetchPublicCategoriesQuery } from "../redux/api/categoryApiSlice";
+import {
+  setCategories,
+  setProducts,
+  setChecked,
+} from "../redux/features/Shop/shopSlice";
+import Loader from "../components/Loader";
+import ProductCard from "./Products/ProductCard";
 
-// import {
-//   setCategories,
-//   setProducts,
-//   setChecked,
-// } from "../redux/features/shop/shopSlice";
-// import Loader from "../components/Loader";
-// import ProductCard from "./Products/ProductCard";
+const Shop = () => {
+  const dispatch   = useDispatch();
 
-// const Shop = () => {
-//   const dispatch = useDispatch();
-//   const { categories, products, checked, radio } = useSelector(
-//     (state) => state.shop
-//   );
-//   const { userInfo } = useSelector((state) => state.auth);
+  // ──────────────────────────────────────────
+  //   Redux state
+  // ──────────────────────────────────────────
+  const { categories, products, checked, radio } = useSelector(
+    (state) => state.shop
+  );
+  const { userInfo }   = useSelector((state) => state.auth);
+  const favourites      = useSelector(
+    (state) => state.favorites.favorites || []
+  );
 
-//   const categoriesQuery = useFetchCategoriesQuery();
-//   const [priceFilter, setPriceFilter] = useState("");
+  // ──────────────────────────────────────────
+  //   Data queries
+  // ──────────────────────────────────────────
+  const categoriesQuery = useFetchPublicCategoriesQuery();
 
-//   const filteredProductsQuery = useGetFilteredProductsQuery({
-//     checked,
-//     radio,
-//   });
+  const filteredProductsQuery = useGetFilteredProductsQuery({ checked, radio });
 
-//   const userId = userInfo?._id;
-//   const { data: favourites = [], refetch } = useGetFavoritesQuery(userId, {
-//     skip: !userId,
-//   });
-//   const [addFavorite] = useAddFavoriteMutation();
-//   const [removeFavorite] = useRemoveFavoriteMutation();
+  // ──────────────────────────────────────────
+  //   Local UI state
+  // ──────────────────────────────────────────
+  const userId = userInfo?._id;
+  const [priceFilter, setPriceFilter] = useState("");
 
-//   useEffect(() => {
-//     if (!categoriesQuery.isLoading) {
-//       dispatch(setCategories(categoriesQuery.data));
-//     }
-//   }, [categoriesQuery.data, dispatch]);
+  // ──────────────────────────────────────────
+  //   Side‑effects
+  // ──────────────────────────────────────────
+  useEffect(() => {
+    if (userId) dispatch(fetchFavorites(userId));
+  }, [dispatch, userId]);
 
-//   useEffect(() => {
-//     if (!checked.length || !radio.length) {
-//       if (!filteredProductsQuery.isLoading) {
-//         // Filter products based on both checked categories and price filter
-//         const filteredProducts = filteredProductsQuery.data.filter(
-//           (product) => {
-//             // Check if the product price includes the entered price filter value
-//             return (
-//               product.price.toString().includes(priceFilter) ||
-//               product.price === parseInt(priceFilter, 10)
-//             );
-//           }
-//         );
+  useEffect(() => {
+    if (!categoriesQuery.isLoading) {
+      dispatch(setCategories(categoriesQuery.data));
+    }
+  }, [categoriesQuery.data, dispatch]);
 
-//         dispatch(setProducts(filteredProducts));
-//       }
-//     }
-//   }, [checked, radio, filteredProductsQuery.data, dispatch, priceFilter]);
+  useEffect(() => {
+    if (!checked.length || !radio.length) {
+      if (!filteredProductsQuery.isLoading) {
+        const filtered = filteredProductsQuery.data.filter(
+          (p) =>
+            p.price.toString().includes(priceFilter) ||
+            p.price === parseInt(priceFilter, 10)
+        );
+        dispatch(setProducts(filtered));
+      }
+    }
+  }, [
+    checked,
+    radio,
+    filteredProductsQuery.data,
+    dispatch,
+    priceFilter,
+  ]);
 
-//   const handleBrandClick = (brand) => {
-//     const productsByBrand = filteredProductsQuery.data?.filter(
-//       (product) => product.brand === brand
-//     );
-//     dispatch(setProducts(productsByBrand));
-//   };
+  // ──────────────────────────────────────────
+  //   Handlers
+  // ──────────────────────────────────────────
+  const handleBrandClick = (brand) => {
+    const byBrand = filteredProductsQuery.data?.filter(
+      (p) => p.brand === brand
+    );
+    dispatch(setProducts(byBrand));
+  };
 
-//   const handleCheck = (value, id) => {
-//     const updatedChecked = value
-//       ? [...checked, id]
-//       : checked.filter((c) => c !== id);
-//     dispatch(setChecked(updatedChecked));
-//   };
+  const handleCheck = (checkedNow, id) => {
+    const updated = checkedNow
+      ? [...checked, id]
+      : checked.filter((c) => c !== id);
+    dispatch(setChecked(updated));
+  };
 
-//   // Add "All Brands" option to uniqueBrands
-//   const uniqueBrands = [
-//     ...Array.from(
-//       new Set(
-//         filteredProductsQuery.data
-//           ?.map((product) => product.brand)
-//           .filter((brand) => brand !== undefined)
-//       )
-//     ),
-//   ];
+  const handlePriceChange = (e) => {
+    setPriceFilter(e.target.value);
+  };
 
-//   const handlePriceChange = (e) => {
-//     // Update the price filter state when the user types in the input filed
-//     setPriceFilter(e.target.value);
-//   };
+  const handleAddFavorite = async ({ productId }) => {
+    if (!userId) return;
+    await dispatch(addFavorite({ userId, productId }));
+    dispatch(fetchFavorites(userId));
+  };
 
-//   const handleAddFavorite = async ({ productId }) => {
-//     await addFavorite({ productId });
-//     refetch();
-//   };
-//   const handleRemoveFavorite = async ({ productId }) => {
-//     await removeFavorite({ productId });
-//     refetch();
-//   };
+  const handleRemoveFavorite = async ({ productId }) => {
+    if (!userId) return;
+    await dispatch(removeFavorite({ userId, productId }));
+    dispatch(fetchFavorites(userId));
+  };
 
-//   return (
-//     <>
-//       <div className="container mx-auto">
-//         <div className="flex md:flex-row">
-//           <div className="bg-[#151515] p-3 mt-2 mb-2">
-//             <h2 className="h4 text-center py-2 bg-black rounded-full mb-2">
-//               Filter by Categories
-//             </h2>
+  // ──────────────────────────────────────────
+  //   Derived values
+  // ──────────────────────────────────────────
+  const uniqueBrands = [
+    ...new Set(
+      filteredProductsQuery.data?.map((p) => p.brand).filter(Boolean)
+    ),
+  ];
 
-//             <div className="p-5 w-[15rem]">
-//               {categories?.map((c) => (
-//                 <div key={c._id} className="mb-2">
-//                   <div className="flex ietms-center mr-4">
-//                     <input
-//                       type="checkbox"
-//                       id="red-checkbox"
-//                       onChange={(e) => handleCheck(e.target.checked, c._id)}
-//                       className="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 dark:focus:ring-pink-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                     />
+  // ──────────────────────────────────────────
+  //   JSX
+  // ──────────────────────────────────────────
+  return (
+    <div className="container mx-auto bg-blue-50 dark:bg-gray-900 min-h-screen">
+      <div className="flex flex-col md:flex-row">
+        {/* ── Sidebar Filters ───────────────── */}
+        <aside className="bg-blue-200 dark:bg-[#151515] p-5 w-full md:w-[18rem] rounded-md mb-6 md:mb-0">
+          {/* Category filter */}
+          <h2 className="text-center py-2 rounded-full mb-4 bg-blue-100 text-black dark:bg-pink-700 dark:text-white font-semibold">
+            Filter by Categories
+          </h2>
+          {categories?.map((c) => {
+            const id = `cat-${c._id}`;
+            return (
+              <label key={c._id} htmlFor={id} className="flex items-center mb-3">
+                <input
+                  id={id}
+                  type="checkbox"
+                  onChange={(e) => handleCheck(e.target.checked, c._id)}
+                  className="w-4 h-4 text-blue-500 dark:text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-2 focus:ring-blue-600 dark:focus:ring-pink-600 dark:bg-gray-700 dark:border-gray-600 dark:accent-pink-500"
+                />
+                <span className="ml-2 text-sm text-black dark:text-gray-300">
+                  {c.name}
+                </span>
+              </label>
+            );
+          })}
 
-//                     <label
-//                       htmlFor="pink-checkbox"
-//                       className="ml-2 text-sm font-medium text-white dark:text-gray-300"
-//                     >
-//                       {c.name}
-//                     </label>
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
+          {/* Brand filter */}
+          <h2 className="text-center py-2 rounded-full my-4 bg-blue-100 text-black dark:bg-pink-700 dark:text-white font-semibold">
+            Filter by Brands
+          </h2>
+          {uniqueBrands.map((brand) => {
+            const id = `brand-${brand}`;
+            return (
+              <label key={brand} htmlFor={id} className="flex items-center mb-3">
+                <input
+                  id={id}
+                  type="radio"
+                  name="brand"
+                  onChange={() => handleBrandClick(brand)}
+                  className="w-4 h-4 text-blue-600 dark:text-pink-600 bg-gray-100 border-gray-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-pink-600 dark:bg-gray-700 dark:border-gray-600 dark:accent-pink-500"
+                />
+                <span className="ml-2 text-sm text-black dark:text-gray-300">
+                  {brand}
+                </span>
+              </label>
+            );
+          })}
 
-//             <h2 className="h4 text-center py-2 bg-black rounded-full mb-2">
-//               Filter by Brands
-//             </h2>
+          {/* Price filter */}
+          <h2 className="text-center py-2 rounded-full my-4 dark:border-none bg-blue-100 text-black dark:bg-pink-700 dark:text-white font-semibold">
+            Filter by Price
+          </h2>
+          <input
+            id="price-filter"
+            type="text"
+            value={priceFilter}
+            onChange={handlePriceChange}
+            placeholder="Enter price"
+            className="w-full px-3 py-2 rounded-lg text-black border border-gray-300 focus:ring-2 focus:ring-blue-300 dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-pink-500"
+          />
 
-//             <div className="p-5">
-//               {uniqueBrands?.map((brand) => (
-//                 <>
-//                   <div className="flex items-enter mr-4 mb-5">
-//                     <input
-//                       type="radio"
-//                       id={brand}
-//                       name="brand"
-//                       onChange={() => handleBrandClick(brand)}
-//                       className="w-4 h-4 text-pink-400 bg-gray-100 border-gray-300 focus:ring-pink-500 dark:focus:ring-pink-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                     />
+          {/* Reset */}
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full mt-5 bg-blue-500 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-150 dark:bg-pink-600 dark:hover:bg-pink-700"
+          >
+            Reset Filters
+          </button>
+        </aside>
 
-//                     <label
-//                       htmlFor="pink-radio"
-//                       className="ml-2 text-sm font-medium text-white dark:text-gray-300"
-//                     >
-//                       {brand}
-//                     </label>
-//                   </div>
-//                 </>
-//               ))}
-//             </div>
+        {/* ── Products Grid ─────────────────── */}
+        <main className="flex-1 p-3">
+          <h2 className="text-xl font-semibold text-center text-black dark:text-white mb-4">
+            {products?.length} Products
+          </h2>
 
-//             <h2 className="h4 text-center py-2 bg-black rounded-full mb-2">
-//               Filer by Price
-//             </h2>
+          <div className="flex flex-wrap justify-center">
+            {filteredProductsQuery.isLoading ? (
+              <Loader />
+            ) : products.length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-300">
+                No products found.
+              </p>
+            ) : (
+              products.map((p) => (
+                <div key={p._id} className="p-3">
+                  <ProductCard
+                    product={p}
+                    userId={userId}
+                    favourites={favourites}  
+                    addFavorite={handleAddFavorite}
+                    removeFavorite={handleRemoveFavorite}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
 
-//             <div className="p-5 w-[15rem]">
-//               <input
-//                 type="text"
-//                 placeholder="Enter Price"
-//                 value={priceFilter}
-//                 onChange={handlePriceChange}
-//                 className="w-full px-3 py-2 placeholder-gray-400 border rounded-lg focus:outline-none focus:ring focus:border-pink-300"
-//               />
-//             </div>
-
-//             <div className="p-5 pt-0">
-//               <button
-//                 className="w-full border my-4"
-//                 onClick={() => window.location.reload()}
-//               >
-//                 Reset
-//               </button>
-//             </div>
-//           </div>
-
-//           <div className="p-3">
-//             <h2 className="h4 text-center mb-2">{products?.length} Products</h2>
-//             <div className="flex flex-wrap">
-//               {products.length === 0 ? (
-//                 <Loader />
-//               ) : (
-//                 products?.map((p) => (
-//                   <div className="p-3" key={p._id}>
-//                     <ProductCard
-//                       p={p}
-//                       userId={userId}
-//                       favourites={favourites.map((f) => f._id)}
-//                       addFavorite={handleAddFavorite}
-//                       removeFavorite={handleRemoveFavorite}
-//                     />
-//                   </div>
-//                 ))
-//               )}
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default Shop;
+export default Shop;

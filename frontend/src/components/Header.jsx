@@ -4,31 +4,28 @@ import SmallProduct from "../pages/Products/SmallProduct";
 import ProductCarousel from "../pages/Products/ProductCarousel";
 
 const Header = () => {
-  const { data, isLoading, error } = useGetTopProductsQuery();
-
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return <h1>ERROR</h1>;
-  }
+  const { data, isLoading } = useGetTopProductsQuery();
 
   return (
-    <>
-      <div className="flex justify-around">
-        <div className="xl:block lg:hidden md:hidden:sm:hidden">
-          <div className="grid grid-cols-2">
-            {data.map((product) => (
-              <div key={product._id}>
-                <SmallProduct product={product} />
-              </div>
+    <header className="w-full flex flex-col lg:flex-row gap-4 px-4 sm:px-6 lg:px-10 xl:px-16 mt-8">
+      {/* Left: Products Grid */}
+      <div className="w-full lg:w-1/2">
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 place-items-center">
+            {data?.map((product) => (
+              <SmallProduct product={product} key={product._id} />
             ))}
           </div>
-        </div>
+        )}
+      </div>
+
+      {/* Right: Carousel */}
+      <div className="w-full lg:w-1/2">
         <ProductCarousel />
       </div>
-    </>
+    </header>
   );
 };
 

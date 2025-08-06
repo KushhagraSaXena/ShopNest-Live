@@ -22,7 +22,8 @@ const toggleFavorite = (id) => {
   if (isError) return <div>Error loading products</div>;
 
   return (
-    <div className="container mx-[9rem]">
+    // <div className="container mx-[9rem]">
+      <div className="container mx-auto px-4 py-6 bg-blue-50 dark:bg-[#111827] min-h-screen">
       <div className="flex flex-col md:flex-row">
         <div className="p-3">
           <div className="ml-[2rem] text-xl font-bold h-12 mb-4 flex justify-between items-center">
@@ -62,7 +63,12 @@ const toggleFavorite = (id) => {
                 <div
                   key={product._id}
                   onClick={() => navigate(`/admin/product/update/${product._id}`)}
-                  className="mb-3 cursor-pointer border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-2 bg-white dark:bg-[#2026477b] hover:shadow-lg transition-all duration-300 w-[95%] mx-auto"
+                className="mb-3 cursor-pointer border border-gray-200 dark:border-gray-700 
+                rounded-lg shadow-sm hover:shadow-lg hover:shadow-gray-400 
+                dark:shadow-none dark:hover:shadow-md dark:hover:shadow-blue-900 
+                p-2 bg-white dark:bg-[#2026477b] transition-all duration-300 dark:duration-100 w-[95%] mx-auto
+                overflow-hidden"
+
                 >
                   <div className="flex">
                     <img
@@ -116,7 +122,13 @@ const toggleFavorite = (id) => {
                 onClick={() =>
                   navigate(`/admin/product/update/${product._id}`)
                 }
-                  className="block mb-3 cursor-pointer mx-auto border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-1 bg-white dark:bg-[#2026477b] hover:shadow-lg transition-all duration-300 overflow-hidden"
+                  className="flex flex-col mb-3 cursor-pointer mx-auto border
+                   border-gray-200 dark:border-gray-700 rounded-lg 
+                      shadow-sm hover:shadow-lg hover:shadow-gray-400
+                     dark:shadow-none dark:hover:shadow-md dark:hover:shadow-blue-900 
+                      p-1 bg-white dark:bg-[#2026477b]
+                  transition-all duration-200 dark:duration-100 overflow-hidden
+                  "
                 >
                   <div className="flex">
                     <img
@@ -192,3 +204,5 @@ const toggleFavorite = (id) => {
 };
 
 export default AllProducts;
+
+// No changes needed if always rendered inside Router.

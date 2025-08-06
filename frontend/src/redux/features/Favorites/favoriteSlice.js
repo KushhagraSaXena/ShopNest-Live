@@ -15,17 +15,16 @@ export const fetchFavorites = createAsyncThunk(
   }
 );
 
-// Add a favourite
+// ✅ Add Favorite
 export const addFavorite = createAsyncThunk(
   "favorites/addFavorite",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
-        `/api/users/favourites/add`,
-        { productId },
-        { withCredentials: true }
-      );
-      // Always return array of string IDs
+  `/api/users/favourites/add`,  // ✅ Corrected route
+  { productId },
+  { withCredentials: true }
+);
       return data.favourites.map((fav) => fav.toString());
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || err.message);
@@ -33,23 +32,20 @@ export const addFavorite = createAsyncThunk(
   }
 );
 
-// Remove a favourite
+// ✅ Remove Favorite
 export const removeFavorite = createAsyncThunk(
   "favorites/removeFavorite",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(
-        `/api/users/favourites/remove`,
-        { productId },
-        { withCredentials: true }
-      );
-      // Always return array of string IDs
+      const { data } = await await axios.post('/api/users/favourites/remove', { productId }, { withCredentials: true });
+
       return data.favourites.map((fav) => fav.toString());
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || err.message);
     }
   }
 );
+
 
 const favoriteSlice = createSlice({
   name: "favorites",

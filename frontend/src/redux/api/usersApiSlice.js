@@ -3,7 +3,6 @@ import { USERS_URL } from '../constants'
 import { logout } from '../features/auth/authSlice';
 import Profile from '../../pages/User/Profile';
 
-
 export const userApiSlice = apiSlice.injectEndpoints({    //login endpoint
 endpoints : (builder) => ({
     login: builder.mutation({
@@ -75,23 +74,27 @@ endpoints : (builder) => ({
 
     addFavorite: builder.mutation({
       query: ({ userId, productId }) => ({
-        url: `/users/${userId}/favourites/add`,
+       url: `${USERS_URL}/${userId}/favourites/add`,   // -> /api/users/:id/…
         method: "POST",
         body: { productId },
       }),
     }),
     removeFavorite: builder.mutation({
-      query: ({ userId, productId }) => ({
-        url: `/users/${userId}/favourites/remove`,
+         query: ({ userId, productId }) => ({
+         url: `${USERS_URL}/${userId}/favourites/remove`,
         method: "POST",
         body: { productId },
       }),
     }),
     getFavorites: builder.query({
-      query: (userId) => `/users/${userId}/favourites`,
+  query: (userId) => `${USERS_URL}/${userId}/favourites`,
     }),
 
   }),
 });
 
-export const { useLoginMutation, useLogoutMutation, useRegisterMutation, useProfileMutation, useGetUsersQuery, useGetUserDetailsQuery, useUpdateUserMutation,useDeleteUserMutation } = userApiSlice;
+
+// export const { useLoginMutation, useLogoutMutation, useRegisterMutation, useProfileMutation, useGetUsersQuery, useGetUserDetailsQuery, useUpdateUserMutation,useDeleteUserMutation } = userApiSlice;
+
+export const { useLoginMutation, useLogoutMutation, useRegisterMutation, useProfileMutation, useGetUsersQuery, useGetUserDetailsQuery, useUpdateUserMutation,useDeleteUserMutation, useAddFavoriteMutation,useRemoveFavoriteMutation,useGetFavoritesQuery } = userApiSlice;
+

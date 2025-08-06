@@ -106,10 +106,17 @@ const ProductList = () => {
           )}
 
           <div className="mb-3">
-            <label className="border dark:text-white text-black dark:bg-transparent bg-blue-50 px-4 w-full text-center rounded-lg cursor-pointer font-bold py-11 flex justify-center items-center relative">
+<label
+  className="w-full px-4 py-11 text-center font-bold text-black dark:text-white 
+             bg-blue-100 dark:bg-transparent 
+             border border-black dark:border-gray-600 rounded-lg 
+             cursor-pointer flex justify-center items-center relative 
+             focus-within:border-blue-900 dark:focus-within:border-pink-700 
+             focus-within:border-opacity-60 transition duration-300 ease-in-out">
               {image ? image.name : "Upload Image"}
               <span className="mx-1 text-red-500">*</span>
               <input
+                id="image"
                 type="file"
                 name="image"
                 accept="image/*"
@@ -122,10 +129,12 @@ const ProductList = () => {
           <form onSubmit={handleSubmit} className="p-3">
             <div className="flex flex-wrap gap-4">
               <div>
-                <label htmlFor="name">
+                <label htmlFor="Name">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="Name"
+                  name="Name"
                   type="text"
                   className="p-4 mb-3 w-full max-w-md border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
                   value={name}
@@ -133,13 +142,15 @@ const ProductList = () => {
                 />
               </div>
               <div>
-                <label htmlFor="price">
+                <label htmlFor="Price">
                   Price <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="number"
-                  className="p-4 mb-3 w-full max-w-md border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
+                  id="price"
+                  name="price"
+                  type="text"
                   value={price}
+                  className="p-4 mb-3 w-full max-w-md border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
                   onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
@@ -151,6 +162,8 @@ const ProductList = () => {
                   Quantity <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="quantity"
+                  name="quantity"
                   type="number"
                   className="p-4 mb-3 w-full max-w-md border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
                   value={quantity}
@@ -162,6 +175,8 @@ const ProductList = () => {
                   Brand <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="brand"
+                  name="brand"
                   type="text"
                   className="p-4 mb-3 w-full max-w-md border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
                   value={brand}
@@ -174,6 +189,8 @@ const ProductList = () => {
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
+              id="description"
+              name="description"
               className="p-4 mb-3 w-full border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -182,9 +199,11 @@ const ProductList = () => {
             <div className="flex flex-wrap gap-4">
               <div>
                 <label htmlFor="countInStock">
-                  Count In Stock <span className="text-red-500">*</span>
+                  Stock <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="countInStock"
+                  name="countInStock"
                   type="text"
                   className="p-4 mb-3 w-full max-w-md border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
                   value={countInStock}
@@ -196,6 +215,8 @@ const ProductList = () => {
                   Category <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="category"
+                  name="category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="p-4 mb-3 w-full max-w-md border rounded-lg dark:bg-[#101011] bg-blue-50 text-black dark:text-white"
@@ -213,8 +234,8 @@ const ProductList = () => {
             </div>
 
             <button
-              type="submit"
-              className="py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-pink-600 text-white hover:bg-pink-700 transition"
+              type="submit" 
+              className="py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-blue-600 text-white hover:bg-blue-800 dark:bg-pink-600  dark:text-white dark:hover:bg-pink-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-pink-700 focus:ring-opacity-50 transition"
             >
               Submit
             </button>

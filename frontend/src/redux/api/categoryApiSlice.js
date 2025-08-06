@@ -1,5 +1,6 @@
 import { apiSlice } from "./apiSlice";
 import { CATEGORIES_URL } from "../constants";
+import { PUBLIC_CATEGORIES_URL } from "../constants";
 
 export const categoryApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -25,15 +26,29 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
     }),
     listCategories: builder.query({
       query: () => ({
-        url: `${CATEGORIES_URL}/categories`,
+        url: `${CATEGORIES_URL}`,
       }),
     }),
+    fetchCategories: builder.query({
+      query: () => ({
+        url: `${CATEGORIES_URL}`,
+      }),
+      providesTags: ["Categories"],
+    }),
+
     readCategory: builder.query({
       query: (categoryId) => ({
         url: `${CATEGORIES_URL}/${categoryId}`,
       }),
     }),
-  })
+
+        // ✅ Public categories (no token required)
+    fetchPublicCategories: builder.query({
+      query: () => ({
+        url: `${PUBLIC_CATEGORIES_URL}`,
+      }),
+     }),
+    }),
   });
 
   export const {
@@ -41,7 +56,9 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
     useUpdateCategoryMutation,
     useDeleteCategoryMutation,
     useListCategoriesQuery,
+    useFetchCategoriesQuery,
     useReadCategoryQuery,
+      useFetchPublicCategoriesQuery,
   } = categoryApiSlice;
   // Export hooks for usage in functional components
   // The `useCreateCategoryMutation` hook can be used to create a new category

@@ -28,15 +28,16 @@ const Register = () => {
     }
   }, [navigate, redirect, userInfo]);
 
-    useEffect(() => {
+  // Smooth background based on dark mode toggle
+  useEffect(() => {
     const updateBackground = () => {
       const isDark = document.documentElement.classList.contains("dark");
-      const bgColor = isDark ? "#111827" : "#ffffff";
+      const bgColor = isDark ? "#111827" : "#eff6ff"; // bg-blue-50
       document.documentElement.style.backgroundColor = bgColor;
       document.body.style.backgroundColor = bgColor;
     };
 
-    updateBackground(); // Set initially
+    updateBackground(); // Initial call
 
     const observer = new MutationObserver(updateBackground);
     observer.observe(document.documentElement, {
@@ -44,12 +45,16 @@ const Register = () => {
       attributeFilter: ["class"],
     });
 
-    return () => observer.disconnect(); // Clean up
+    return () => observer.disconnect();
   }, []);
-
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    if (!username || !email || !password || !confirmPassword) {
+      toast.error("Please fill in all fields");
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -66,7 +71,7 @@ const Register = () => {
   };
 
   return (
-<section className="w-full h-screen flex items-center justify-center bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section className="w-full min-h-screen flex items-center justify-center bg-blue-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="flex flex-wrap items-center justify-center max-w-7xl w-full px-6 py-12">
         {/* Form Section */}
         <div className="w-full md:w-1/2 lg:w-1/2">

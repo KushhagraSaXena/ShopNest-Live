@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSelector } from 'react-redux';
+import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
 import {
@@ -11,20 +11,38 @@ import {
   MdShoppingCart,
 } from "react-icons/md";
 
-
 const AdminMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { userInfo } = useSelector((state) => state.auth);
-      if (!userInfo?.isAdmin) return null; 
+  const menuRef = useRef(null);
 
+  const { userInfo } = useSelector((state) => state.auth);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
- return (
+  // ✅ Close on outside click
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  if (!userInfo?.isAdmin) return null;
+
+  return (
     <>
+      {/* ✅ Menu Toggle Button */}
       <button
-        className={`z-50 fixed top-5 right-7 bg-[#151515] p-2 rounded-lg`}
+        className={`z-[9999] fixed top-5 right-5 bg-blue-500 dark:bg-[#151515] border border-blue-400 shadow-md hover:border-blue-500 hover:bg-blue-900 dark:hover:bg-gray-950 dark:border-gray-500 dark:hover:border-gray-400 p-2 rounded-lg`}
         onClick={toggleMenu}
         style={{ transition: "right 0.2s, top 0.2s" }}
       >
@@ -39,75 +57,64 @@ const AdminMenu = () => {
         )}
       </button>
 
+      {/* ✅ Backdrop overlay on small screens */}
       {isMenuOpen && (
-        <section className="z-40 bg-[#151515] p-4 fixed right-7 top-16 rounded-lg shadow-lg min-w-[220px]">
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-[998] md:hidden" />
+      )}
+
+      {/* ✅ Slide-down Menu */}
+      {isMenuOpen && (
+        <section
+          ref={menuRef}
+          className="z-[9999] dark:bg-[#151515] bg-blue-950 border border-blue-600 dark:border-gray-500 p-4 fixed right-7 top-16 rounded-lg shadow-lg min-w-[220px]
+          transition-all duration-300 ease-in-out animate-fade-in-down"
+        >
           <ul className="list-none mt-2">
-            <li>
-              <NavLink
-                className="list-item  items-center gap-2 py-2 px-3  mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/dashboard"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                <MdDashboard size={20} /> Admin Dashboard
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item  items-center gap-2 py-2 px-3  mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/categorylist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                <MdCategory size={20} /> Create Category
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item  items-center gap-2 py-2 px-3  mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/productlist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                <MdAddBox size={20} /> Create Product
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item  items-center gap-2 py-2 px-3  mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/allproductslist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                <MdListAlt size={20} /> All Products
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item  items-center gap-2 py-2 px-3  mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/userlist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                <MdPeople size={20} /> Manage Users
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="list-item  items-center gap-2 py-2 px-3  mb-5 hover:bg-[#2E2D2D] rounded-sm"
-                to="/admin/orderlist"
-                style={({ isActive }) => ({
-                  color: isActive ? "greenyellow" : "white",
-                })}
-              >
-                <MdShoppingCart size={20} /> Manage Orders
-              </NavLink>
-            </li>
+            {[
+              {
+                to: "/admin/dashboard",
+                label: "Admin Dashboard",
+                icon: <MdDashboard size={20} />,
+              },
+              {
+                to: "/admin/categorylist",
+                label: "Create Category",
+                icon: <MdCategory size={20} />,
+              },
+              {
+                to: "/admin/productlist",
+                label: "Create Product",
+                icon: <MdAddBox size={20} />,
+              },
+              {
+                to: "/admin/allproductslist",
+                label: "All Products",
+                icon: <MdListAlt size={20} />,
+              },
+              {
+                to: "/admin/userlist",
+                label: "Manage Users",
+                icon: <MdPeople size={20} />,
+              },
+              {
+                to: "/admin/orderlist",
+                label: "Manage Orders",
+                icon: <MdShoppingCart size={20} />,
+              },
+            ].map(({ to, label, icon }) => (
+              <li key={to}>
+                <NavLink
+                  className="flex items-center gap-2 py-2 px-3 mb-3 hover:bg-[#2E2D2D] rounded-sm"
+                  to={to}
+                  style={({ isActive }) => ({
+                    color: isActive ? "greenyellow" : "white",
+                  })}
+                  onClick={() => setIsMenuOpen(false)} // ✅ close after click
+                >
+                  {icon} {label}
+                </NavLink>
+              </li>
+            ))}
           </ul>
         </section>
       )}

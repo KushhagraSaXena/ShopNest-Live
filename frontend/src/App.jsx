@@ -7,19 +7,25 @@ import MainLayout from './components/MainLayout';
 
 
 function App() {
-  
- return (
-    <>
-      <ToastContainer />
+  return (
+    <div className="flex min-h-screen">
       <Navigation />
-      <MainLayout>
-              {/* <AdminMenu />  */}
-        <main className="py-1">
-          <Outlet />
-        </main>
-      </MainLayout>
-    </>
+
+      {/* ✅ Main content adjusts based on sidebar width */}
+      <div
+        className="flex-1 transition-all duration-300 px-1
+        pl-[7.5rem] lg:pl-[8rem] xl:pl-[9rem]" // ← adjust this to match sidebar width
+      >
+        <ToastContainer />
+        <MainLayout>
+          <main className="py-1">
+            <Outlet />
+          </main>
+        </MainLayout>
+      </div>
+    </div>
   );
 }
+
 
 export default App

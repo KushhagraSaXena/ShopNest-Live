@@ -1,9 +1,13 @@
 /* @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities"; */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
 
 /* Autofill fixes */
 input:-webkit-autofill,
@@ -45,9 +49,14 @@ html.dark, body.dark {
   color: #f4f4f4; /* Light text for dark mode */
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 
 html, body {
-  background-color: #ffffff ; /* fallback for light mode */
+  /* background-color: #ffffff ; fallback for light mode */
+  background-color: #eff6ff ; 
   min-height: 100%;
   margin: 0;
   padding: 0;
@@ -67,8 +76,16 @@ html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   width: 8px;
 }
+
 html::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track {
+  /* background-color: #f0f4fe; light gray for light mode */
+  background-color: #ced7ee;
+  border-radius: 4px;
+}
+
+html::-webkit-scrollbar-track.dark,
+body::-webkit-scrollbar-track.dark {
   background-color: #f3f4f6; /* light gray for light mode */
   border-radius: 4px;
 }
@@ -80,6 +97,12 @@ body.dark::-webkit-scrollbar-track {
 } 
 
 
+html::-webkit-scrollbar-thumb.dark,
+body::-webkit-scrollbar-thumb.dark {
+  background-color: #374151;
+  border-radius: 4px;
+}
+
 html::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb {
   background-color: #374151;
@@ -88,27 +111,47 @@ body::-webkit-scrollbar-thumb {
 
 html::-webkit-scrollbar-thumb:hover,
 body::-webkit-scrollbar-thumb:hover {
+  background-color: #3e3e3e;
+}
+
+html::-webkit-scrollbar-thumb:hover.dark,
+body::-webkit-scrollbar-thumb:hover.dark{
   background-color: #4b5563;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover,
+body.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #132852; /*Tailwind's gray-500*/
 }
 
 /* Toastify custom styles for light mode */
 .Toastify__toast {
-  background: #1f2937;
-  color: #f9fafb;
+  background: #c0cbfe;
+  color: #000000;
+  /* text-shadow: #224f23; */
 }
 
 /* Toastify custom styles for dark mode */
 html.dark .Toastify__toast {
-  background: #1f2937;
+  /* background: #1f2937; */
+  background: #0f2544;
   color: #f9fafb;
 }
 
 /* Optional: Adjust success/error/info colors for better contrast */
 .Toastify__toast--success {
-  border-left: 6px solid #0da22b;
+  border-left: 6px solid #1cc73e;
 }
+.Toastify__toast {
+  transition: all 0.3s ease-in-out;
+  border-radius: 0.5rem; /* Tailwind's rounded-md */
+  font-size: 0.875rem; /* Tailwind's text-sm */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tailwind's shadow-md */
+}
+
 .Toastify__toast--error {
-  border-left: 6px solid #ef4444;
+  /* border-left: 6px solid #ef4444; */
+    border-left: 6px solid #e13030;
 }
 .Toastify__toast--info {
   border-left: 6px solid #3b82f6;
@@ -124,3 +167,24 @@ html.dark textarea {
 }
 
 
+.Toastify__toast-container {
+  z-index: 9999 !important;
+}
+
+
+@layer utilities {
+  @keyframes fade-in-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-1rem);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-down {
+    animation: fade-in-down 0.3s ease-out both;
+  }
+}

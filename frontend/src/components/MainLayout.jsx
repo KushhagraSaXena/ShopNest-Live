@@ -1,18 +1,17 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFavorites } from "../redux/features/Favorites/favoriteSlice";
-import { useNavigate } from "react-router-dom";
 
 const MainLayout = ({ children }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.auth.userInfo); // FIX: define userInfo
   const userId = userInfo?._id;
 
-  useEffect(() => {
-    if (userInfo) {
-      dispatch(fetchFavorites(userInfo._id));
-    }
-  }, [dispatch, userInfo]);
+  // useEffect(() => {
+  //   if (userInfo) {
+  //     dispatch(fetchFavorites(userInfo._id));
+  //   }
+  // }, [dispatch, userInfo]); //extra dependency userInfo
 //This makes sure favorites are reloaded from the backend if user reloads the page.
 // Ensure the background color is set based on the current theme
 
@@ -26,7 +25,7 @@ const MainLayout = ({ children }) => {
       if (!html || !body) return;
 
       const isDark = html.classList.contains("dark");
-      const bgColor = isDark ? "#111827" : "#ffffff";
+      const bgColor = isDark ? "#111827" : "#eff6ff";
       html.style.backgroundColor = bgColor;
       body.style.backgroundColor = bgColor;
     };
@@ -50,7 +49,7 @@ const MainLayout = ({ children }) => {
   }, [dispatch, userId]);
 
   return (
-    <div className="min-h-screen overflow-y-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen overflow-y-auto bg-blue-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-0">
       {children}
     </div>
   );

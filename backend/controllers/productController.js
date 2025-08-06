@@ -3,11 +3,15 @@ import Product from "../models/productModel.js";
 import fs from 'fs';
 import path from 'path';
 import mongoose from "mongoose"; // ✅ Required to use ObjectId
+import { Types } from 'mongoose';
 
+// import { ObjectId } from 'mongodb'; // ✅ Alternative way to use ObjectId if needed
 const addProduct = asyncHandler(async (req, res) => {
   // res.send("Product added successfully!");
 
-  const { name, category, description, price, quantity, image, brand, countInStock } = req.fields;
+  const { name, category, description, price, quantity, brand, countInStock } = req.fields;
+  const image = req.fields.image || (req.files?.image && req.files.image.path);
+
   try {
     
     // console.log("Received product data:", {
@@ -143,20 +147,24 @@ const updateProductDetails = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
     if (category) {
-  product.category = new mongoose.Types.ObjectId(category.trim());
+      // product.category = new mongoose.Types.ObjectId(category.trim());
+    product.category = new Types.ObjectId(category.trim());
 }
 
     // Update product details
     product.name = name.trim();
     product.description = description.trim();
     product.price = parseFloat(price);
-    product.category = category.trim();
+    // product.category = new mongoose.Types.ObjectId(category.trim());
+    product.category = new Types.ObjectId(category.trim());
     product.quantity = parseInt(quantity, 10);
     product.image = image.trim();
     product.brand = brand.trim();
     product.countInStock = parseInt(countInStock, 10);
+
     await product.save();
     res.status(200).json(product);
+
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(400).json({ message: error.message });
