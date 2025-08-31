@@ -64,15 +64,18 @@ const handleStripePayment = async () => {
       return;
     }
 
-    const { data } = await axios.post("/api/payments/create-checkout-session", {
-      orderId,
-      cartItems: order.orderItems.map(item => ({
-        name: item.name,
-        price: item.price,
-        quantity: item.qty, // match your backend expectation
-        image: item.image,
-      })),
-    });
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
+      {
+        orderId,
+        cartItems: order.orderItems.map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.qty,
+          image: item.image,
+        })),
+      }
+    );
 
         // ✅ Redirect directly to Stripe-hosted checkout page
     window.location.href = data.url;

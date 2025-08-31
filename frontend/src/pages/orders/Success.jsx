@@ -12,7 +12,7 @@ const Success = () => {
   useEffect(() => {
     const markOrderAsPaid = async () => {
       try {
-        await axios.put(`/api/orders/${orderId}/pay`, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/pay`, {
           id: "stripe-checkout-id", // You can store this in state if needed
           status: "succeeded",
           email_address: "user@example.com", // Replace if you can get real email

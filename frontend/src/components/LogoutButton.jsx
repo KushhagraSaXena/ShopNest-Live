@@ -10,7 +10,7 @@ const LogoutButton = ({ className = "" }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/users/logout");
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/users/logout`);
       dispatch(logout()); // clear Redux state
       // navigate("/login");
       window.location.href = "/login";
