@@ -1,6 +1,7 @@
 //packages
 import path from 'path';
 import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
@@ -21,6 +22,12 @@ const PORT = process.env.PORT || 5000;
 
 connectDB();
 const app = express();
+
+// Enable CORS for your frontend
+app.use(cors({
+  origin: 'https://shopnest-live.vercel.app', // allow your Vercel frontend
+  credentials: true, // if you are sending cookies/auth headers
+}));
 
 app.use('/api/payments/webhook', bodyParser.raw({ type: 'application/json' }));
 
