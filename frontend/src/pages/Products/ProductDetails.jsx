@@ -84,8 +84,13 @@ const handleTabChange = (tabNum) => {
   setActiveTab(tabNum);
   if (tabNum === 2) {
     window.location.hash = "#reviews";
+    // smooth scroll to reviews
+    setTimeout(() => {
+      document.getElementById("reviews-section")?.scrollIntoView({ 
+        behavior: "smooth" 
+      });
+    }, 100);
   } else {
-    // Removes hash from URL
     window.history.replaceState(null, "", window.location.pathname);
   }
 };
@@ -196,6 +201,8 @@ const handleTabChange = (tabNum) => {
               <div className="flex justify-between flex-wrap text-yellow-400">
               <Ratings
                 value={product.rating}
+                  // text={`${product.numReviews} Reviews`}
+                  // onClick={() => handleTabChange(2)}
                 text={
                   <span
                     role="button"

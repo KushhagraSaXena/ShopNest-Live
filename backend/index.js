@@ -16,8 +16,6 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import bodyParser from 'body-parser';
 
 // import stripeRoutes from './routes/stripeRoutes.js';
-
-
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 
@@ -26,11 +24,9 @@ const app = express();
 
 app.use('/api/payments/webhook', bodyParser.raw({ type: 'application/json' }));
 
-
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
-
 
 app.use('/api/users',userRoutes);
 app.use('/api/category',categoryRoutes);
@@ -50,8 +46,6 @@ app.get("/api/products", (req, res) => {
 
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
-
-
 
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

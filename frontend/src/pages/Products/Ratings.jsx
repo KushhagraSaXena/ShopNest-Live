@@ -1,9 +1,7 @@
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
 
-const Ratings = ({ value, text, color }) => {
-
-    const isString = typeof text === 'string';
+const Ratings = ({ value = 0, text = "", color = "yellow-500", onClick }) => {
+  const isString = typeof text === "string";
 
   const fullStars = Math.floor(value);
   const halfStars = value - fullStars > 0.5 ? 1 : 0;
@@ -26,8 +24,8 @@ const Ratings = ({ value, text, color }) => {
             role="button"
             tabIndex={0}
             onClick={onClick}
-            onKeyDown={(e) => e.key === "Enter" && onClick()}
-            className="ml-2 cursor-pointer text-black dark:text-white hover:text-blue-500 hover:underline transition-all duration-150"
+            onKeyDown={(e) => e.key === "Enter" && onClick?.()}
+            className="ml-2 cursor-pointer text-black dark:text-white hover:text-blue-500 hover:underline transition duration-150"
           >
             {text}
           </span>
@@ -37,10 +35,6 @@ const Ratings = ({ value, text, color }) => {
       )}
     </div>
   );
-};
-
-Ratings.defaultProps = {
-  color: "yellow-500",
 };
 
 export default Ratings;

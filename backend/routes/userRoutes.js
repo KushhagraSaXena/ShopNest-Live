@@ -41,7 +41,7 @@ router.route('/:id')
 
 // ✅ Add a product to favourites
 router.post('/favourites/add', authenticate, async (req, res) => {
-  const userId = req.user._id;
+const userId = req.user?._id || req.body.userId;
   const { productId } = req.body;
 
   if (!productId) {
@@ -65,7 +65,7 @@ router.post('/favourites/add', authenticate, async (req, res) => {
 
 // ✅ Remove a product from favourites
 router.post('/favourites/remove', authenticate, async (req, res) => {
-  const userId = req.user._id;
+const userId = req.user?._id || req.body.userId;
   const { productId } = req.body;
 
   if (!productId) {
@@ -92,17 +92,26 @@ router.get('/:userId/favourites', authenticate, async (req, res) => {
   try {
     const userId = req.params.userId;
 
+    if (!req.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
     if (req.user._id.toString() !== userId && !req.user.isAdmin) {
       return res.status(403).json({ error: "Forbidden" });
     }
 
     const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     res.json(user.favourites.map(f => f.toString()));
   } catch (err) {
     console.error("Fetch favourites failed:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 // 🧪 Test Routes (Optional)

@@ -6,6 +6,7 @@ export const fetchFavorites = createAsyncThunk(
   "favorites/fetchFavorites",
   async (userId, { rejectWithValue }) => {
     try {
+      // console.log("fetchFavorites userId:", userId);
       const { data } = await axios.get(`/api/users/${userId}/favourites`);
       // Always return array of string IDs
       return data.map((fav) => fav.toString());

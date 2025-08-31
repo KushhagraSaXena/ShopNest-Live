@@ -194,7 +194,8 @@ const ProductTabs = ({
           <section>
             {activeTab === 2 && (
               <>
-                <div id="reviews" ref={reviewRef} className="p-2 transition-all rounded-md">
+              <div id="reviews-section">
+                <div id="reviews"  ref={reviewRef} className="p-2 transition-all rounded-md">
                   <div>{product.reviews.length === 0 && <p>No Reviews</p>}</div>
 
                   <div>
@@ -214,6 +215,7 @@ const ProductTabs = ({
                       </div>
                     ))}
                   </div>
+                </div>
                 </div>
               </>
             )}

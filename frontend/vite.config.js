@@ -5,13 +5,21 @@ import mkcert from 'vite-plugin-mkcert';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), mkcert()],
-  server:{
-        https: true,
-    proxy:{
-      "/api/": "http://localhost:5000",
-      "/uploads/": "http://localhost:5000",
+  server: {
+  https: true,
+  proxy: {
+    "/api": {
+      target: "http://localhost:5000",
+      changeOrigin: true,
+      secure: false,
+    },
+    "/uploads": {
+      target: "http://localhost:5000",
+      changeOrigin: true,
+      secure: false,
     },
   },
+},
     optimizeDeps: {
     include: [
       '@fortawesome/fontawesome-svg-core',
