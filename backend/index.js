@@ -24,10 +24,24 @@ connectDB();
 const app = express();
 
 // Enable CORS for your frontend
+const allowedOrigins = [
+  "https://shopnest-live.vercel.app",
+  "https://shopnest-live-oa9hzt7dj-kushhagrasaxenas-projects.vercel.app",
+  "http://localhost:5173" // optional for local dev
+];
+
 app.use(cors({
-  origin: 'https://shopnest-live.vercel.app', // allow your Vercel frontend
-  credentials: true, // if you are sending cookies/auth headers
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true); // allow REST clients or curl
+    if(allowedOrigins.indexOf(origin) === -1){
+      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
 }));
+
 
 app.use('/api/payments/webhook', bodyParser.raw({ type: 'application/json' }));
 
