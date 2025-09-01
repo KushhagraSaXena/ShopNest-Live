@@ -6,10 +6,8 @@ import { Types } from 'mongoose';
 
 
 // import { ObjectId } from 'mongodb'; // ✅ Alternative way to use ObjectId if needed
-
-import Product from "../models/productModel.js";
-import cloudinary from "cloudinary";
-cloudinary.v2.config({
+import { v2 as cloudinary } from "cloudinary";
+cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
@@ -62,7 +60,7 @@ const addProduct = asyncHandler(async (req, res) => {
       name: name.trim(),
       description: description.trim(),
       price: parseFloat(price),
-      category: category.trim(),
+      category: new Types.ObjectId(category.trim()),
       quantity: parseInt(quantity, 10),
       image: imageUrl,
       publicId, // 🔑 Save publicId
@@ -147,7 +145,7 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     if (req.files?.image) {
   // ✅ Delete old image from Cloudinary if it exists
   if (product.publicId) {
-    await cloudinary.v2.uploader.destroy(product.publicId);
+    await cloudinary.uploader.destroy(product.publicId);
   }
 
   // ✅ Upload new image
@@ -389,7 +387,10 @@ const filterProducts = asyncHandler(async (req, res) => {
     const { checked = [], radio = [] } = req.body;
 
     let args = {};
-    if (checked.length > 0) args.category = checked;
+    if (checked.length > 0) {
+  args.category = { $in: checked.map(id => new Types.ObjectId(id)) };
+}
+
     if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
 
     const products = await Product.find(args);
