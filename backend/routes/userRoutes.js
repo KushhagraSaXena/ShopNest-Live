@@ -18,7 +18,6 @@ import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-
 // Auth & Profile Routes
 router.post("/auth", loginUser);
 router.post("/logout", logoutCurrentUser);
@@ -26,17 +25,6 @@ router.post("/logout", logoutCurrentUser);
 router.route("/profile")
   .get(authenticate, getCurrentUserPorfile)
   .put(authenticate, updateCurrentUserProfile);
-
-
-// Admin User Routes
-router.route("/")
-  .post(createUser)
-  .get(authenticate, authorizeAdmin, getAllUsers);
-
-router.route('/:id')
-  .delete(authenticate, authorizeAdmin, deleteUserById)
-  .get(authenticate, authorizeAdmin, getUserById)
-  .put(authenticate, authorizeAdmin, updateUserById);
 
 
 // ✅ Add a product to favourites
@@ -112,6 +100,16 @@ router.get('/:userId/favourites', authenticate, async (req, res) => {
   }
 });
 
+
+// Admin User Routes
+router.route("/")
+  .post(createUser)
+  .get(authenticate, authorizeAdmin, getAllUsers);
+
+router.route('/:id')
+  .delete(authenticate, authorizeAdmin, deleteUserById)
+  .get(authenticate, authorizeAdmin, getUserById)
+  .put(authenticate, authorizeAdmin, updateUserById);
 
 
 // 🧪 Test Routes (Optional)

@@ -1,6 +1,10 @@
 import React, { Profiler } from 'react';
 import ReactDOM from 'react-dom/client';
 // import App from './App.jsx';
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 import './index.css';
 import { Route, RouterProvider, Routes, createRoutesFromElements } from 'react-router';
 import { createBrowserRouter } from 'react-router-dom';
