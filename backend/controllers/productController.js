@@ -77,8 +77,6 @@ const addProduct = asyncHandler(async (req, res) => {
   }
 });
 
-export { addProduct };
-
 
 const updateProductDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
