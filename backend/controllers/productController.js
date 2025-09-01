@@ -3,18 +3,17 @@ import Product from "../models/productModel.js";
 
 import mongoose from "mongoose"; // ✅ Required to use ObjectId
 import { Types } from 'mongoose';
-import cloudinary from 'cloudinary';
 
+
+// import { ObjectId } from 'mongodb'; // ✅ Alternative way to use ObjectId if needed
+
+import Product from "../models/productModel.js";
+import cloudinary from "cloudinary";
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-// import { ObjectId } from 'mongodb'; // ✅ Alternative way to use ObjectId if needed
-
-import asyncHandler from "express-async-handler";
-import Product from "../models/productModel.js";
-import cloudinary from "cloudinary";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
