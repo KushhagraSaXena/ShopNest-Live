@@ -29,7 +29,8 @@ const allowedOrigins = [
   "https://shopnest-live-oa9hzt7dj-kushhagrasaxenas-projects.vercel.app",
   "http://localhost:5173", // optional for local dev
   "https://shopnest-live-git-main-kushhagrasaxenas-projects.vercel.app",
-  "https://shopnest-live-gr3lps0cp-kushhagrasaxenas-projects.vercel.app"
+  "https://shopnest-live-gr3lps0cp-kushhagrasaxenas-projects.vercel.app",
+"https://shopnest-live-n0cban23l-kushhagrasaxenas-projects.vercel.app/"
 ];
 
 app.use(cors({
