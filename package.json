@@ -36,6 +36,7 @@
     "nodemon": "^3.1.9",
     "react-helmet-async": "^2.0.5",
     "slick-carousel": "^1.8.1",
+    "streamifier": "^0.1.1",
     "stripe": "^18.3.0"
   },
   "devDependencies": {
