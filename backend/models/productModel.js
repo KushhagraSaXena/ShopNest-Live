@@ -30,9 +30,12 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   image: {
-    type: String,
-    required: true,
-  },
+      type: String, 
+      required: true,
+    },
+    publicId: {
+      type: String, 
+    },
   brand: {
     type: String,
     required: true,

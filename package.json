@@ -9,7 +9,7 @@
     "frontend": "npm run dev --prefix frontend",
     "build": "npm run build --prefix frontend",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\""
-  }, 
+  },
   "engines": {
     "node": ">=18"
   },
@@ -22,6 +22,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@stripe/stripe-js": "^7.5.0",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
     "concurrently": "^9.1.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

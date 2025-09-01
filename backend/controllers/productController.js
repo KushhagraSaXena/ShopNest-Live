@@ -1,35 +1,26 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
-import fs from 'fs';
-import path from 'path';
+
 import mongoose from "mongoose"; // ✅ Required to use ObjectId
 import { Types } from 'mongoose';
+import cloudinary from 'cloudinary';
 
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 // import { ObjectId } from 'mongodb'; // ✅ Alternative way to use ObjectId if needed
+
+import asyncHandler from "express-async-handler";
+import Product from "../models/productModel.js";
+import cloudinary from "cloudinary";
+
 const addProduct = asyncHandler(async (req, res) => {
-  // res.send("Product added successfully!");
-
-  const { name, category, description, price, quantity, brand, countInStock } = req.fields;
-  const image = req.fields.image || (req.files?.image && req.files.image.path);
-
   try {
-    
-    // console.log("Received product data:", {
-    //   name,
-    //   description,
-    //   price,
-    //   category,
-    //   quantity,
-    //   image,
-    //   brand
-    // });
+    const { name, category, description, price, quantity, brand, countInStock } = req.fields;
 
-    if (category) {
-  req.fields.category = new mongoose.Types.ObjectId(category.trim());
-    // req.fields.category = new mongoose.Types.ObjectId.createFromHexString(category.trim())
-
-}
-    //validate required fields
+    // 🔎 Validation
     switch (true) {
       case !name:
         return res.status(400).json({ message: "Name is required" });
@@ -41,60 +32,56 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Category is required" });
       case !quantity:
         return res.status(400).json({ message: "Quantity is required" });
-      case !image:
-        return res.status(400).json({ message: "Image is required" });
       case !brand:
         return res.status(400).json({ message: "Brand is required" });
       case countInStock === undefined:
         return res.status(400).json({ message: "Count in stock is required" });
-     
-      case typeof name !== "string":
-        return res.status(400).json({ message: "Name must be a Letters" });
-        case isNaN(price):
+      case isNaN(price):
         return res.status(400).json({ message: "Price must be a number" });
       case isNaN(quantity):
         return res.status(400).json({ message: "Quantity must be a number" });
       case isNaN(countInStock):
         return res.status(400).json({ message: "Count in stock must be a number" });
-      case price <= 0:
-        return res.status(400).json({ message: "Price must be greater than 0" });
-      case quantity < 0:
-        return res.status(400).json({ message: "Quantity cannot be negative" });
-      case countInStock < 0:
-        return res.status(400).json({ message: "Count in stock cannot be negative" });
-      case name.length < 4:
-        return res.status(400).json({ message: "Name must be at least 4 characters long" });
-      case description.length < 5:
-        return res.status(400).json({ message: "Description must be at least 5 characters long" });
-      case brand.length < 3:
-        return res.status(400).json({ message: "Brand must be at least 3 characters long" });
     }
 
-    // Check if the product already exists
-    const existingProduct = await Product.findOne({ name: name.trim() });
-    if (existingProduct) {
-      return res.status(400).json({ message: "Product already exists" });
+    // ✅ Handle image upload
+    let imageUrl = "";
+    let publicId = "";
+
+    if (req.files?.image) {
+      const uploadedResponse = await cloudinary.v2.uploader.upload(req.files.image.path, {
+        folder: "shopnest",
+      });
+      imageUrl = uploadedResponse.secure_url;
+      publicId = uploadedResponse.public_id;
+    } else {
+      return res.status(400).json({ message: "Image is required" });
     }
 
-    // Create a new product
+    // ✅ Create product
     const product = new Product({
       name: name.trim(),
       description: description.trim(),
       price: parseFloat(price),
-category: new mongoose.Types.ObjectId(category.trim()),
+      category: category.trim(),
       quantity: parseInt(quantity, 10),
-      image: image.trim(),
+      image: imageUrl,
+      publicId, // 🔑 Save publicId
       brand: brand.trim(),
       countInStock: parseInt(countInStock, 10),
     });
+
     await product.save();
+
     res.status(201).json(product);
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error adding product:", error);
-    res.status(400).json({ message: error.message });
-    }
+    res.status(500).json({ message: error.message });
+  }
 });
+
+export { addProduct };
+
 
 const updateProductDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -158,7 +145,23 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     // product.category = new mongoose.Types.ObjectId(category.trim());
     product.category = new Types.ObjectId(category.trim());
     product.quantity = parseInt(quantity, 10);
-    product.image = image.trim();
+    if (req.files?.image) {
+  // ✅ Delete old image from Cloudinary if it exists
+  if (product.publicId) {
+    await cloudinary.v2.uploader.destroy(product.publicId);
+  }
+
+  // ✅ Upload new image
+  const uploadedResponse = await cloudinary.v2.uploader.upload(req.files.image.path, {
+    folder: "shopnest",
+  });
+  product.image = uploadedResponse.secure_url;
+  product.publicId = uploadedResponse.public_id; // ✅ Save new publicId
+} else if (image) {
+  product.image = image; // keep existing URL if provided
+}
+
+
     product.brand = brand.trim();
     product.countInStock = parseInt(countInStock, 10);
 
@@ -171,40 +174,61 @@ const updateProductDetails = asyncHandler(async (req, res) => {
   }
 });
 
-const deleteProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+// controllers/productController.js
+
+const deleteProduct = async (req, res) => {
   try {
-    // Find the product by ID
-    const product = await Product.findById(id);
-    // const product = await Product.findByIdAndDelete(id);
+    const product = await Product.findById(req.params.id);
+
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Removing image file if exists
-    if (product.image) {
-      const imagePath = path.join(
-        path.resolve(), // instead of __dirname in ES modules
-        'uploads',
-        path.basename(product.image)
-      );
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
+    // ✅ Delete from Cloudinary using saved publicId
+    if (product.publicId) {
+      await cloudinary.v2.uploader.destroy(product.publicId);
     }
 
-    await product.deleteOne(); // or Product.deleteOne({ _id: id })
+    await product.deleteOne();
 
-    return res.status(200).json({
-      message: "Product deleted successfully",
-      name: product.name, 
-      deletedProduct: product, 
-    });
+    res.json({ message: "Product removed" });
   } catch (error) {
     console.error("Error deleting product:", error);
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Server Error" });
   }
-});
+};
+
+
+
+// const deleteProduct = asyncHandler(async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     // Find the product by ID
+//     const product = await Product.findById(id);
+//     // const product = await Product.findByIdAndDelete(id);
+//     if (!product) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
+
+//     // Removing image file if exists
+//    if (product.image) {
+//   const publicId = product.image.split('/').pop().split('.')[0]; // extract Cloudinary publicId
+//   await cloudinary.v2.uploader.destroy(`shopnest/${publicId}`);
+// }
+
+
+//     await product.deleteOne(); // or Product.deleteOne({ _id: id })
+
+//     return res.status(200).json({
+//       message: "Product deleted successfully",
+//       name: product.name, 
+//       deletedProduct: product, 
+//     });
+//   } catch (error) {
+//     console.error("Error deleting product:", error);
+//     res.status(400).json({ message: error.message });
+//   }
+// });
 
 const getProducts = asyncHandler(async (req, res) => {
   try {
